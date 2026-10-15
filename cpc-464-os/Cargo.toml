@@ -1,0 +1,11 @@
+[package]
+name = "cpc464-os"
+version = "0.1.0"
+edition = "2021"
+description = "Readable, commented Rust reconstruction of the Amstrad CPC464 lower ROM (firmware v1.0), recovered from a Z80 disassembly"
+license = "MIT"
+
+[dependencies]
+
+[lib]
+path = "src/lib.rs"
