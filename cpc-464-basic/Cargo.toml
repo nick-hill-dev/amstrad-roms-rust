@@ -1,0 +1,12 @@
+[package]
+name = "cpc464-basic"
+version = "0.1.0"
+edition = "2021"
+description = "Readable, commented Rust reconstruction of the Amstrad CPC464 BASIC 1.0 ROM (Locomotive BASIC), recovered from a Z80 disassembly"
+license = "MIT"
+
+[dependencies]
+cpc464-os = { path = "../cpc-464-os" }
+
+[lib]
+path = "src/lib.rs"

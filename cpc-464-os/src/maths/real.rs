@@ -117,11 +117,25 @@ impl<H: Hardware> Cpc<H> {
 
     /// `BD94` (ROM `2E5E`): like [`Self::bin_to_real`] but the integer is taken to be scaled by
     /// 2^-8 (exponent 0xA8) – used by the random number generator.
-    pub fn bin_to_real_a8(&mut self, addr: u16, a: u8) -> u16 { self.bin_to_real_exp(addr, a, 0xA8) }
+    ///
+    /// The ROM routine also takes the register `C` as a guard byte below the 32-bit
+    /// integer (it is `LD B,A8 / CALL 36A1` with the caller's `C`); this entry passes 0,
+    /// see [`Self::bin_to_real_a8_guard`].
+    pub fn bin_to_real_a8(&mut self, addr: u16, a: u8) -> u16 { self.bin_to_real_a8_guard(addr, a, 0) }
+
+    /// `BD94` with the guard byte `C` given: the 40-bit value `(addr..addr+3):guard` scaled
+    /// by 2^-8.  (BASIC's number parser uses this to convert 40-bit decimal mantissas.)
+    pub fn bin_to_real_a8_guard(&mut self, addr: u16, a: u8, guard: u8) -> u16 {
+        self.bin_to_real_exp_guard(addr, a, 0xA8, guard)
+    }
 
     fn bin_to_real_exp(&mut self, addr: u16, sign: u8, exp: u8) -> u16 {
+        self.bin_to_real_exp_guard(addr, sign, exp, 0)
+    }
+
+    fn bin_to_real_exp_guard(&mut self, addr: u16, sign: u8, exp: u8, guard: u8) -> u16 {
         self.wr8(addr.wrapping_add(4), exp);
-        let acc = Acc { m: self.mant_at(addr), c: 0 };
+        let acc = Acc { m: self.mant_at(addr), c: guard };
         self.real_normalise_store(addr, acc, sign)
     }
 

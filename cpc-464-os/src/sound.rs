@@ -341,6 +341,8 @@ impl<H: Hardware> Cpc<H> {
         if self.c8(ix, Q_FREE) == 0 {
             self.wr16(ix + EVENT, event);                       // low at +29, high at +30
         } else {
+            // The low byte is stored either way; a zero high byte means "not armed".
+            self.set_c8(ix, EVENT, event as u8);
             self.set_c8(ix, EVENT + 1, 0);
             self.kl_event(event);
         }
